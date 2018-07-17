@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/market/lots/add', 'LotController@addView');
+Route::post('/market/lots/add', 'LotController@store');
