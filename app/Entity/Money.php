@@ -11,4 +11,6 @@ class Money extends Model
         "currency_id",
         "amount"
     ];
+
+    protected $table = 'money';
 }

@@ -10,4 +10,15 @@ class Currency extends Model
         "id",
         "name"
     ];
+    protected $table = 'currencies';
+
+    /**
+     * @param $query
+     * @param $name
+     * @return mixed
+     */
+    public function scopeName($query, $name)
+    {
+        return $query->where('name', $name);
+    }
 }

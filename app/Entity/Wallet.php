@@ -10,4 +10,10 @@ class Wallet extends Model
         "id",
         "user_id"
     ];
+    protected $table = 'wallets';
+
+    public function scopeUserId($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
 }

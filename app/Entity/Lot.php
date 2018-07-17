@@ -15,6 +15,7 @@ class Lot extends Model
         'date_time_close',
         'price'
     ];
+    protected $table = 'lots';
 
     public function getDateTimeOpen() : int
     {

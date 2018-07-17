@@ -12,4 +12,6 @@ class Trade extends Model
         "user_id",
         "amount"
     ];
+
+    protected $table = 'trades';
 }
