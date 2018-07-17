@@ -2,9 +2,9 @@
 
 namespace App\Request;
 
-use App\Request\Contracts\AddCurrencyRequest;
+use App\Request\Contracts\AddCurrencyRequest as IAddCurrencyRequest;
 
-class AddCurrency implements AddCurrencyRequest
+class AddCurrencyRequest implements IAddCurrencyRequest
 {
     private $name;
 
