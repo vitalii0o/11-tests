@@ -44,4 +44,9 @@ class LotController extends Controller
             return $this->returnJsonError($exception->getMessage(), $exception->getCode());
         }
     }
+
+    public function addView()
+    {
+        return view('add');
+    }
 }
