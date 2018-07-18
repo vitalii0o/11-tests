@@ -31,6 +31,9 @@ class TradeCreated extends Mailable
      */
     public function build()
     {
-
+        return $this->view('emails.notification')
+            ->with([
+                'trade' => $this->trade
+            ]);
     }
 }
