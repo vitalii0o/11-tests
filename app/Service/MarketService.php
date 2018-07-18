@@ -25,15 +25,37 @@ class MarketService implements IMarketService
 {
     protected $lotRepository;
 
-    public function __construct(
-        LotRepository $lotRepository
-    )
+    public function __construct(LotRepository $lotRepository)
     {
         $this->lotRepository = $lotRepository;
     }
 
     public function addLot(AddLotRequest $lotRequest): Lot
     {
+        if ($lotRequest->getPrice() < 0) {
+            throw new \InvalidArgumentException('Wrong price format');
+        }
+
+        $openTime = date('Y-m-d H:i:s', $lotRequest->getDateTimeOpen());
+        $closeTime = date('Y-m-d H:i:s', $lotRequest->getDateTimeClose());
+
+        if ($lotRequest->getDateTimeOpen() > $lotRequest->getDateTimeClose()) {
+            throw new \InvalidArgumentException('Wrong open date');
+        }
+
+        $activeLotsByOpenTime = Lot::where('seller_id', $lotRequest->getSellerId())
+            ->whereBetween('date_time_open', array($openTime, $closeTime))
+            ->first();
+        if ($activeLotsByOpenTime) {
+            throw new \Exception('Only one active session available');
+        }
+        $activeLotsByCloseTime = Lot::where('seller_id', $lotRequest->getSellerId())
+            ->whereBetween('date_time_close', array($openTime, $closeTime))
+            ->first();
+        if ($activeLotsByCloseTime) {
+            throw new \Exception('Only one active session available');
+        }
+
         $lot = new Lot();
         $lot->currency_id = $lotRequest->getCurrencyId();
         $lot->seller_id = $lotRequest->getSellerId();
