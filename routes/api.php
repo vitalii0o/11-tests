@@ -21,6 +21,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('lots', 'LotController@all');
 Route::get('lots/{$id}', 'LotController@get');
 
-// REGISTERED USERS
+// TODO:REGISTERED USERS
 Route::middleware('auth:api')->post('lots', 'LotController@post');
 Route::middleware('auth:api')->post('trades', 'TradeController@post');
