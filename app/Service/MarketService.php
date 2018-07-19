@@ -64,18 +64,20 @@ class MarketService implements IMarketService
             throw new \InvalidArgumentException('Wrong open date');
         }
 
-        $activeLotsByOpenTime = Lot::where('seller_id', $lotRequest->getSellerId())
+        /*
+         * TODO: Fix session
+         * $activeLotsByOpenTime = Lot::where('seller_id', $lotRequest->getSellerId())
             ->whereBetween('date_time_open', array($openTime, $closeTime))
             ->first();
-        if ($activeLotsByOpenTime) {
+        if ($activeLotsByOpenTime->count()) {
             throw new \Exception('Only one active session available');
         }
         $activeLotsByCloseTime = Lot::where('seller_id', $lotRequest->getSellerId())
             ->whereBetween('date_time_close', array($openTime, $closeTime))
             ->first();
-        if ($activeLotsByCloseTime) {
+        if ($activeLotsByCloseTime->count()) {
             throw new \Exception('Only one active session available');
-        }
+        }*/
 
         $lot = new Lot();
         $lot->currency_id = $lotRequest->getCurrencyId();
