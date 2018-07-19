@@ -19,6 +19,8 @@ use App\Mail\TradeCreated;
 use App\Repository\Contracts\CurrencyRepository;
 use App\Repository\Contracts\LotRepository;
 use App\Repository\Contracts\TradeRepository;
+use App\Repository\Contracts\UserRepository;
+use App\Repository\Contracts\WalletRepository;
 use App\Request\Contracts\AddCurrencyRequest;
 use App\Request\Contracts\AddLotRequest;
 use App\Request\Contracts\BuyLotRequest;
@@ -33,11 +35,20 @@ class MarketService implements IMarketService
 {
     protected $lotRepository;
     protected $tradeRepository;
+    protected $userRepository;
+    protected $walletRepository;
 
-    public function __construct(LotRepository $lotRepository, TradeRepository $tradeRepository)
+    public function __construct(
+        LotRepository $lotRepository,
+        TradeRepository $tradeRepository,
+        UserRepository $userRepository,
+        WalletRepository $walletRepository
+    )
     {
         $this->lotRepository = $lotRepository;
         $this->tradeRepository = $tradeRepository;
+        $this->userRepository = $userRepository;
+        $this->walletRepository = $walletRepository;
     }
 
     public function addLot(AddLotRequest $lotRequest): Lot
@@ -78,15 +89,15 @@ class MarketService implements IMarketService
 
     public function buyLot(BuyLotRequest $lotRequest): Trade
     {
-        $currentLot = Lot::findOrFail($lotRequest->getLotId());
+        $currentLot = $this->lotRepository->getById($lotRequest->getLotId());
 
         $this->validateRequestLot($currentLot, $lotRequest);
 
-        $seller = User::findOrFail($currentLot->seller_id);
-        $buyer = User::findOrFail($lotRequest->getUserId());
+        $seller = $this->userRepository->getById($currentLot->seller_id);
+        $buyer = $this->userRepository->getById($lotRequest->getUserId());
 
-        $buyerWallet = Wallet::where('user_id', $buyer->id)->firstOrFail();
-        $sellerWallet = Wallet::where('user_id', $seller->id)->firstOrFail();
+        $buyerWallet = $this->walletRepository->findByUser($buyer->id);
+        $sellerWallet = $this->walletRepository->findByUser($seller->id);
 
         $buyerMoney = Money::where('wallet_id', $buyerWallet->id)->where('currency_id', $currentLot->currency_id)->firstOrFail();
         $sellerMoney = Money::where('wallet_id', $sellerWallet->id)->where('currency_id', $currentLot->currency_id)->firstOrFail();
@@ -140,7 +151,7 @@ class MarketService implements IMarketService
         if ($lotRequest->getAmount() > $currentLot->price) {
             throw new \Exception('You want too much money');
         }
-        if ($currentLot->getDateTimeClose < time()) {
+        if ($currentLot->getDateTimeClose() < time()) {
             throw new \Exception('Lot has been closed');
         }
     }
